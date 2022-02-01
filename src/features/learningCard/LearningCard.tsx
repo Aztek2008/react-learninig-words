@@ -1,16 +1,17 @@
+import { useAppSelector } from 'app/hooks';
 import { Button } from 'features/buttons/Button';
-import { IWord } from 'features/inputForm/inputSlice';
+import { IWord, selectWord } from 'features/inputForm/inputSlice';
 
 import styles from './LearningCard.module.css';
 
 interface ICardProps {
-  word: IWord | undefined;
   array: IWord[];
   guessTranslationHandler: (event: string) => void;
 }
 
 export const LearningCard = (props: ICardProps) => {
-  const { word, array, guessTranslationHandler } = props;
+  const { array, guessTranslationHandler } = props;
+  const word = useAppSelector(selectWord);
 
   return (
     <div>

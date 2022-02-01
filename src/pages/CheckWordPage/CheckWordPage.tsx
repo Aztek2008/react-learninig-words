@@ -1,69 +1,78 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-import { useAppSelector } from 'app/hooks';
-import { Layout } from 'features/layout/Layout';
-import { IWord } from 'features/inputForm/inputSlice';
+import { Layout } from 'features/layout';
+import { Button } from 'features/buttons';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { FinishModal, ReportModal } from 'features/modal';
+import { selectWords } from 'features/inputForm/inputSlice';
 import { randomItemsPicker } from 'helpers/randomItemsPicker';
-import { LearningCard } from 'features/learningCard/LearningCard';
-import { NotEnoughPairsMessage } from 'features/learningCard/NotEnoughPairsMessage';
-import { Button } from 'features/buttons/Button';
-import { Modal } from 'features/modal/Modal';
+import { LearningCard, NotEnoughPairsMessage } from 'features/learningCard';
+import {
+  ICheck,
+  setWordToLearn,
+  updateChecksList,
+  setIsFinishModalOpen,
+  setIsLearnStarted,
+  selectLearnStarted,
+  selectWord,
+  selectCorrectAnswers,
+  setCorrectAnswers,
+  selectWordsToLearn,
+  setWordsToLearn,
+  selectSuggestedFour,
+  setSuggestedFour,
+} from 'features/inputForm/inputSlice';
 
 import linkStyles from 'features/buttons/Button.module.css';
 
 export const CheckWordPage = () => {
-  const words = useAppSelector((state) => state.wordPairs.words);
+  const dispatch = useAppDispatch();
+  const words = useAppSelector(selectWords);
+  const theWord = useAppSelector(selectWord);
+  const wordsToLearn = useAppSelector(selectWordsToLearn);
+  const isLearnStarted = useAppSelector(selectLearnStarted);
+  const correctAnswers = useAppSelector(selectCorrectAnswers);
+  const suggestedFour = useAppSelector(selectSuggestedFour);
 
-  const [isEnoughWords, setIsEnoughWords] = useState(false);
-  const [learnIsStarted, setLearnIsStarted] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [wordsToLearn, setWordsToLearn] = useState<IWord[]>([]);
-  const [suggestedFour, setSuggestedFour] = useState<IWord[]>([]);
-  const [wordToLearn, setWordToLearn] = useState<IWord>();
-  const [correctAnswers, setCorrectAnswers] = useState(0);
-  const missedPairs = 10 - words.length;
-
-  useEffect(() => {
-    if (words.length >= 10) {
-      setIsEnoughWords(true);
-    }
-
-    return () => {
-      setIsEnoughWords(false);
-      setLearnIsStarted(false);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const minPairs = 10;
+  const missedPairs = minPairs - words.length;
 
   useEffect(() => {
     let idx = Math.round(Math.random() * wordsToLearn.length - 1);
     const choosenWord = wordsToLearn[idx];
+    dispatch(setWordToLearn(choosenWord));
 
-    if (learnIsStarted && !wordsToLearn.length) {
-      setLearnIsStarted(false);
-      setIsModalOpen(true);
+    if (isLearnStarted && !wordsToLearn.length) {
+      dispatch(setIsLearnStarted(false));
+      dispatch(setIsFinishModalOpen(true));
     }
 
-    setWordToLearn(idx >= 0 ? choosenWord : wordsToLearn[0]);
+    dispatch(setWordToLearn(idx >= 0 ? choosenWord : wordsToLearn[0]));
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wordsToLearn]);
 
   useEffect(() => {
-    wordToLearn && chooseNewValuesSet();
+    theWord && chooseNewValuesSet();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wordToLearn]);
+  }, [theWord]);
 
   const chooseNewValuesSet = () => {
-    let translationValues = randomItemsPicker(words, 4, wordToLearn);
-    setSuggestedFour(translationValues);
+    let translationValues = randomItemsPicker(words, 4, theWord);
+    dispatch(setSuggestedFour(translationValues));
   };
 
   const guessTranslationHandler = (event: string) => {
     const optionId = event;
+    const checkedWord: ICheck = {
+      ...theWord,
+      isCorrect: theWord?.id === optionId,
+    };
 
-    if (optionId === wordToLearn?.id) {
-      setCorrectAnswers((prev) => prev + 1);
+    dispatch(updateChecksList(checkedWord));
+
+    if (optionId === theWord?.id) {
+      dispatch(setCorrectAnswers(correctAnswers + 1));
       deleteLearnedWord(optionId);
       return console.log('Correcto!');
     } else {
@@ -74,30 +83,29 @@ export const CheckWordPage = () => {
 
   const deleteLearnedWord = (itemId: string) => {
     const newSetForLearning = wordsToLearn.filter((item) => item.id !== itemId);
-    setWordsToLearn(newSetForLearning);
+    dispatch(setWordsToLearn(newSetForLearning));
   };
 
   const startLearn = () => {
     const choosenWords = randomItemsPicker(words, 10);
-    setWordsToLearn(choosenWords);
-    setLearnIsStarted(true);
+    dispatch(setWordsToLearn(choosenWords));
+    dispatch(setIsLearnStarted(true));
   };
 
   const learningCardProps = {
-    word: wordToLearn,
     array: suggestedFour,
     guessTranslationHandler,
   };
 
   const buttonProps = {
-    learnIsStarted,
+    isLearnStarted,
     handlerFn: startLearn,
     title: 'Ready?',
   };
 
   return (
     <Layout>
-      {!isEnoughWords ? (
+      {words.length < minPairs ? (
         <Layout>
           <NotEnoughPairsMessage missedPairs={missedPairs} />
           <NavLink className={linkStyles.optionButton} to='/add'>
@@ -107,15 +115,11 @@ export const CheckWordPage = () => {
       ) : (
         <Button {...buttonProps} />
       )}
-      {wordToLearn?.translationValue.length && suggestedFour.length && (
+      {theWord?.translationValue.length && suggestedFour.length && (
         <LearningCard {...learningCardProps} />
       )}
-      <Modal
-        isOpen={isModalOpen}
-        stats={correctAnswers * 10}
-        startLearn={startLearn}
-        setIsOpen={setIsModalOpen}
-      />
+      <FinishModal startLearn={startLearn} />
+      <ReportModal startLearn={startLearn} />
     </Layout>
   );
 };

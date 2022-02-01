@@ -1,1 +1,2 @@
-export { Modal } from './Modal';
+export { FinishModal } from './FinishModal';
+export { ReportModal } from './ReportModal';
