@@ -1,0 +1,18 @@
+.navContainer {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navlink {
+  text-transform: uppercase;
+  text-decoration: none;
+  min-width: 150px;
+  color: inherit;
+  padding: 10px;
+  background-color: snow;
+  font-size: 18px;
+  border-radius: 10px;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+}

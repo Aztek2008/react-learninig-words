@@ -1,0 +1,23 @@
+.title {
+  display: flex;
+  padding: 20px;
+  width: 100%;
+  justify-content: center;
+}
+
+.listItem {
+  display: flex;
+  justify-content: space-between;
+  width: 50%;
+}
+
+.value {
+  width: 40%;
+  text-align: end;
+  padding: 0 10px;
+}
+.translationValue {
+  width: 40%;
+  text-align: left;
+  padding: 0 10px;
+}
