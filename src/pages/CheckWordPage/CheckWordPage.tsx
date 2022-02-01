@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
+import { NavLink } from 'react-router-dom';
 import { useAppSelector } from 'app/hooks';
 import { Layout } from 'features/layout/Layout';
 import { IWord } from 'features/inputForm/inputSlice';
 import { randomItemsPicker } from 'helpers/randomItemsPicker';
 import { LearningCard } from 'features/learningCard/LearningCard';
 import { NotEnoughPairsMessage } from 'features/learningCard/NotEnoughPairsMessage';
-import { Button } from 'features/button/Button';
+import { Button } from 'features/buttons/Button';
 import { Modal } from 'features/modal/Modal';
+
+import linkStyles from 'features/buttons/Button.module.css';
 
 export const CheckWordPage = () => {
   const words = useAppSelector((state) => state.wordPairs.words);
@@ -33,7 +36,7 @@ export const CheckWordPage = () => {
   }, []);
 
   useEffect(() => {
-    let idx = Math.round(Math.random() * wordsToLearn.length);
+    let idx = Math.round(Math.random() * wordsToLearn.length - 1);
     const choosenWord = wordsToLearn[idx];
 
     if (learnIsStarted && !wordsToLearn.length) {
@@ -41,14 +44,14 @@ export const CheckWordPage = () => {
       setIsModalOpen(true);
     }
 
-    setTimeout(() => {
-      setWordToLearn(choosenWord);
-    }, 300);
-    // setWordToLearn(choosenWord); // SET&SAVE 1 WORD FROM 10 CHOOSED
+    setWordToLearn(idx >= 0 ? choosenWord : wordsToLearn[0]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wordsToLearn]);
 
   useEffect(() => {
-    wordToLearn !== undefined && chooseNewValuesSet();
+    wordToLearn && chooseNewValuesSet();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wordToLearn]);
 
   const chooseNewValuesSet = () => {
@@ -56,7 +59,7 @@ export const CheckWordPage = () => {
     setSuggestedFour(translationValues);
   };
 
-  const guessTranslationHandler = (event: number) => {
+  const guessTranslationHandler = (event: string) => {
     const optionId = event;
 
     if (optionId === wordToLearn?.id) {
@@ -69,7 +72,7 @@ export const CheckWordPage = () => {
     }
   };
 
-  const deleteLearnedWord = (itemId: number) => {
+  const deleteLearnedWord = (itemId: string) => {
     const newSetForLearning = wordsToLearn.filter((item) => item.id !== itemId);
     setWordsToLearn(newSetForLearning);
   };
@@ -95,7 +98,12 @@ export const CheckWordPage = () => {
   return (
     <Layout>
       {!isEnoughWords ? (
-        <NotEnoughPairsMessage missedPairs={missedPairs} />
+        <Layout>
+          <NotEnoughPairsMessage missedPairs={missedPairs} />
+          <NavLink className={linkStyles.optionButton} to='/add'>
+            Go add words
+          </NavLink>
+        </Layout>
       ) : (
         <Button {...buttonProps} />
       )}

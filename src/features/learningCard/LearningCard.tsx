@@ -1,11 +1,12 @@
-import { Button } from 'features/button/Button';
+import { Button } from 'features/buttons/Button';
 import { IWord } from 'features/inputForm/inputSlice';
+
 import styles from './LearningCard.module.css';
 
 interface ICardProps {
   word: IWord | undefined;
   array: IWord[];
-  guessTranslationHandler: (event: any) => void;
+  guessTranslationHandler: (event: string) => void;
 }
 
 export const LearningCard = (props: ICardProps) => {

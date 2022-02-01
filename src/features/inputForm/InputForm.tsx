@@ -1,11 +1,15 @@
 import { FormEvent, useState } from 'react';
-import { useAppDispatch, useAppSelector } from 'app/hooks';
-import styles from './InputForm.module.css';
+import { NavLink } from 'react-router-dom';
 import { updateWordsList } from './inputSlice';
-import svg from 'assets/icons/free-icon-angle-left-3916912.svg';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { Input } from 'features/inputForm/Input';
+import { Button } from 'features/buttons';
+import { v4 as uuidv4 } from 'uuid';
+
+import styles from 'features/inputForm/InputForm.module.css';
+import linkStyles from 'features/buttons/Button.module.css';
 
 export const InputForm = () => {
-  const history = window.history;
   const [textValue, setTextValue] = useState<string>('');
   const [textTranslationValue, setTextTranslationValue] = useState<string>('');
   const words = useAppSelector((state) => state.wordPairs.words);
@@ -19,7 +23,7 @@ export const InputForm = () => {
       setTextValue(value);
     }
 
-    if (name === 'textTranslationValue') {
+    if (name === 'textTranslationValue' && value.trim()) {
       setTextTranslationValue(value);
     }
   };
@@ -33,15 +37,14 @@ export const InputForm = () => {
     event.preventDefault();
 
     if (
-      textValue.trim().length <= 0 &&
+      textValue.trim().length <= 0 ||
       textTranslationValue.trim().length <= 0
     ) {
-      console.log('You did not enter anything');
+      console.log('You forget to input text');
       return;
     }
 
     const existedWord = words.filter((word) => word.value === textValue);
-    console.log('existedWord', existedWord);
 
     if (existedWord.length) {
       console.log('This word already exists, try again');
@@ -50,6 +53,7 @@ export const InputForm = () => {
     }
 
     const configuredPair = {
+      id: uuidv4(),
       value: textValue,
       translationValue: textTranslationValue,
     };
@@ -61,31 +65,30 @@ export const InputForm = () => {
   };
 
   return (
-    <form className={styles.formContainer} onSubmit={submitHandler}>
-      <button className={styles.backButton} onClick={() => history.back()}>
-        <img src={svg} alt='Go back to main page'></img>
-      </button>
-      <input
-        className={styles.input}
-        placeholder='Write your word here...'
-        name='textValue'
-        value={textValue}
-        type='text'
-        onChange={handleInputChange}
-      />
+    <div className={styles.formContainer}>
+      <form className={styles.formContainer} onSubmit={submitHandler}>
+        <Input
+          placeholder='Write your word here...'
+          name='textValue'
+          value={textValue}
+          onChange={handleInputChange}
+        />
 
-      <input
-        className={styles.input}
-        placeholder='Translate your word...'
-        name='textTranslationValue'
-        type='text'
-        value={textTranslationValue}
-        onChange={handleInputChange}
-      />
+        <Input
+          placeholder='Translate your word...'
+          name='textTranslationValue'
+          value={textTranslationValue}
+          onChange={handleInputChange}
+        />
 
-      <button className={styles.button} type='submit'>
-        Save it
-      </button>
-    </form>
+        <Button type='submit' title={'Save it'} />
+        <NavLink className={linkStyles.optionButton} to='/check'>
+          Learn it
+        </NavLink>
+        <NavLink className={linkStyles.optionButton} to='/'>
+          Go to Main
+        </NavLink>
+      </form>
+    </div>
   );
 };

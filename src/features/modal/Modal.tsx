@@ -1,7 +1,6 @@
 import { useAppDispatch } from 'app/hooks';
-import { Button } from 'features/button/Button';
+import { Button } from 'features/buttons/Button';
 import { updateWordsList } from 'features/inputForm/inputSlice';
-import React from 'react';
 import styles from './Modal.module.css';
 
 type modalProps = {
@@ -26,12 +25,12 @@ export const Modal = ({ stats, isOpen, startLearn, setIsOpen }: modalProps) => {
 
   const goHomeButtonProps = {
     handlerFn: startNewLearn,
-    title: 'Start New Learn?',
+    title: 'Start New Learn',
   };
 
   const learnSameAgainButtonProps = {
     handlerFn: learnAgainTheSame,
-    title: 'Learn Same Again?',
+    title: 'Learn Same Again',
   };
 
   return (

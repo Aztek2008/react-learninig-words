@@ -1,9 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from 'app/store';
-import { wordsMock } from 'helpers/mocks';
+// import { wordsMock } from 'helpers/mocks';
 
 export interface IWord {
-  id: number;
+  id: string;
   value: string;
   translationValue: string;
 }
@@ -15,24 +15,21 @@ export interface IWordsState {
 
 const initialState: IWordsState = {
   word: null,
-  words: wordsMock,
+  words: [], // wordsMock,
 };
 
 export const counterSlice = createSlice({
   name: 'words',
   initialState,
   reducers: {
-    chooseWord: (state, action) => ({
+    chooseWord: (state, action: PayloadAction<IWord>) => ({
       ...state,
       word: action.payload,
     }),
-    updateWordsList: (state, action) => ({
+    updateWordsList: (state, action: PayloadAction<IWord[]>) => ({
       ...state,
       words: action.payload,
     }),
-    // incrementByAmount: (state, action: PayloadAction<number>) => {
-    //   state.value += action.payload;
-    // },
   },
 });
 

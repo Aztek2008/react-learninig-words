@@ -11,7 +11,7 @@ export const NavBar = () => {
           Add word
         </NavLink>
         <NavLink className={styles.navlink} to='/check'>
-          Check yourself
+          Learn
         </NavLink>
       </nav>
     </Layout>

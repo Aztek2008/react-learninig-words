@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useAppSelector } from 'app/hooks';
 import { InputForm } from 'features/inputForm/InputForm';
 import { Layout } from 'features/layout/Layout';

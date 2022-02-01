@@ -1,5 +1,9 @@
 import styles from './Layout.module.css';
 
-export const Layout = ({ children }: any) => {
+type LayoutProps = {
+  children: any;
+};
+
+export const Layout = ({ children }: LayoutProps) => {
   return <div className={styles.mainContainer}>{children}</div>;
 };

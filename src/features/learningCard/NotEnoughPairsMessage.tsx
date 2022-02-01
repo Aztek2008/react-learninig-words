@@ -6,7 +6,7 @@ type MesgProps = {
 
 export const NotEnoughPairsMessage = ({ missedPairs }: MesgProps) => (
   <p className={styles.notEnoughTitle}>
-    For better experience please add least {missedPairs} more word pairs to
+    For better experience please add at least {missedPairs} more word pairs to
     dictionary
   </p>
 );
